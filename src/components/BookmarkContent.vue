@@ -5,30 +5,32 @@
   -->
 
 <template>
-	<div v-if="isActive && hasMinLength && !archivedFile" class="bookmark-content">
-		<div v-if="bookmark.textContent" class="content" v-html="content" />
-		<div v-else>
-			<NcEmptyContent :title="t('bookmarks', 'Content pending')"
-				:description="t('bookmarks', 'This content is being downloaded for offline use. Please check back later.')">
-				<template #icon>
-					<DownloadIcon />
-				</template>
-			</NcEmptyContent>
+	<NcModal v-if="showNcModal && isActive && hasMinLength && !archivedFile" :title="title" @close="onClose">
+		<div v-if="isActive && hasMinLength && !archivedFile" class="bookmark-content">
+			<div v-if="bookmark.textContent" class="content" v-html="content" />
+			<div v-else>
+				<NcEmptyContent :title="t('bookmarks', 'Content pending')"
+					:description="t('bookmarks', 'This content is being downloaded for offline use. Please check back later.')">
+					<template #icon>
+						<DownloadIcon />
+					</template>
+				</NcEmptyContent>
+			</div>
 		</div>
-	</div>
+	</NcModal>
 </template>
 
 <script>
 import DownloadIcon from 'vue-material-design-icons/Download.vue'
 import sanitizeHtml from 'sanitize-html'
 import { generateUrl, generateRemoteUrl } from '@nextcloud/router'
-import { NcEmptyContent } from '@nextcloud/vue'
+import { NcModal, NcEmptyContent } from '@nextcloud/vue'
 
 const MIN_TEXT_LENGTH = 350
 
 export default {
 	name: 'BookmarkContent',
-	components: { NcEmptyContent, DownloadIcon },
+	components: { NcEmptyContent, DownloadIcon, NcModal },
 	computed: {
 		isActive() {
 			if (!this.$store.state.sidebar) return false
@@ -45,6 +47,10 @@ export default {
 			return sanitizeHtml(this.bookmark.htmlContent, {
 				allowProtocolRelative: false,
 			})
+		},
+		showNcModal() {
+//			return this.$store.state.displayCopyDialog
+			return true
 		},
 		archivedFileUrl() {
 			// remove `/username/files/`
@@ -63,16 +69,10 @@ export default {
 
 <style>
 .bookmark-content {
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: max( min(27vw, 500px), 300px); /* side bar */
-	bottom: 0;
-	background: var(--color-main-background);
-	z-index: 1999;
-	display: flex;
-	overflow: scroll;
-	flex-direction: column;
+	min-width: 300px;
+	height: 90vh;
+	overflow-y: scroll;
+	padding: 20px;
 }
 
 .bookmark-content .content {
