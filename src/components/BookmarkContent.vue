@@ -25,6 +25,7 @@ import DownloadIcon from 'vue-material-design-icons/Download.vue'
 import sanitizeHtml from 'sanitize-html'
 import { generateUrl, generateRemoteUrl } from '@nextcloud/router'
 import { NcModal, NcEmptyContent } from '@nextcloud/vue'
+import { mutations } from '../store/index.js'
 
 const MIN_TEXT_LENGTH = 350
 
@@ -49,8 +50,7 @@ export default {
 			})
 		},
 		showNcModal() {
-//			return this.$store.state.displayCopyDialog
-			return true
+			return this.$store.state.displayBookmarkContent
 		},
 		archivedFileUrl() {
 			// remove `/username/files/`
@@ -62,6 +62,11 @@ export default {
 				return generateUrl(`/apps/files/?fileid=${this.bookmark.archivedFile}`)
 			}
 			return null
+		},
+	},
+	methods: {
+		onClose() {
+			this.$store.commit(mutations.DISPLAY_BOOKMARK_CONTENT, false)
 		},
 	},
 }

@@ -68,6 +68,15 @@
 					</NcActions>
 				</div>
 				<div class="details__line">
+					<ZipDiskIcon />
+					<NcActionButton @click="openContentsModal">
+						<template #icon>
+							<ZipDiskIcon />
+						</template>
+						View Contents
+					</NcActionButton>
+				</div>
+				<div class="details__line">
 					<FolderIcon />
 					<div class="folders">
 						<span v-for="folderId in bookmark.folders"
@@ -79,6 +88,7 @@
 						</span>
 					</div>
 				</div>
+
 				<div class="details__line">
 					<TagIcon :aria-label="t('bookmarks', 'Tags')" :title="t('bookmarks', 'Tags')" />
 					<NcMultiselect class="tags"
@@ -127,6 +137,7 @@
 import { NcAppSidebar, NcRichContenteditable, NcActionButton, NcActions, NcMultiselect, NcAppSidebarTab, NcButton } from '@nextcloud/vue'
 import FileDocumentIcon from 'vue-material-design-icons/FileDocument.vue'
 import FolderIcon from 'vue-material-design-icons/Folder.vue'
+import ZipDiskIcon from 'vue-material-design-icons/ZipDisk.vue'
 import InformationVariantIcon from 'vue-material-design-icons/InformationVariant.vue'
 import PencilIcon from 'vue-material-design-icons/Pencil.vue'
 import ArrowRightIcon from 'vue-material-design-icons/ArrowRight.vue'
@@ -145,7 +156,7 @@ const MAX_RELATIVE_DATE = 1000 * 60 * 60 * 24 * 7 // one week
 
 export default {
 	name: 'SidebarBookmark',
-	components: { NcAppSidebar, NcAppSidebarTab, NcMultiselect, NcActions, NcActionButton, NcRichContenteditable, FileDocumentIcon, FolderIcon, InformationVariantIcon, PencilIcon, ArrowRightIcon, TagIcon, OpenInNewIcon, CloseIcon, PencilBoxIcon, DownloadIcon, NcButton },
+	components: { NcAppSidebar, NcAppSidebarTab, NcMultiselect, NcActions, NcActionButton, NcRichContenteditable, FileDocumentIcon, FolderIcon, ZipDiskIcon, InformationVariantIcon, PencilIcon, ArrowRightIcon, TagIcon, OpenInNewIcon, CloseIcon, PencilBoxIcon, DownloadIcon, NcButton },
 	data() {
 		return {
 			title: '',
@@ -210,6 +221,9 @@ export default {
 			const barePath = this.bookmark.archivedFilePath.split('/').slice(3).join('/')
 			return generateRemoteUrl(`webdav/${barePath}`)
 		},
+		showNcModal() {
+			return this.$store.state.displayBookmarkContent
+		},
 	},
 	created() {
 	},
@@ -263,6 +277,9 @@ export default {
 				await this.$store.dispatch(actions.SAVE_BOOKMARK, this.bookmark.id)
 				await this.$store.dispatch(actions.LOAD_TAGS)
 			}, 1000)
+		},
+		openContentsModal() {
+			this.$store.commit(mutations.DISPLAY_BOOKMARK_CONTENT, true)
 		},
 		onOpenFolder(id) {
 			this.$router.push({ name: this.routes.FOLDER, params: { folder: id } })

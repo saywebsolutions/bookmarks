@@ -135,6 +135,10 @@ export default {
 		state.displayCopyDialog = display
 	},
 
+	[mutations.DISPLAY_BOOKMARK_CONTENT](state, display) {
+		state.displayBookmarkContent = display
+	},
+
 	[mutations.RESET_SELECTION](state) {
 		state.selection = { folders: [], bookmarks: [] }
 	},
